@@ -121,4 +121,30 @@ To identify **candidate orthogroups associated with heat tolerance** in FSSC cla
 
 [Link to my github](https://github.com/szs0363/Fusarium_HeatTolerance-Project/tree/main)
 
+## Github File tree
+```
+├── Data
+│   ├── metadata.csv
+│   ├── Orthogroups.GeneCount.tsv
+│   ├── Orthogroups.tsv
+├── Data_Analysis_HTproject_files
+│   ├── figure-markdown_strict
+│   │   ├── unnamed-chunk-7-1.png
+│   │   ├── unnamed-chunk-8-1.png
+│   │   ├── unnamed-chunk-9-1.png
+├── Data_Analysis_HTproject.md
+├── Data_Analysis_HTproject.Rmd
+├── Fusarium_HeatTolerance.Rproj
+├── HPC_scripts
+│   ├── Busco+basicstats.sh
+│   ├── Clean_sort_mask.sh
+│   ├── Orthofinder.sh
+│   ├── predict.sh
+├── README.md
+├── Results
+│   ├── core_orthogroups_all12.csv
+│   ├── orthogroups_softcore_heat_tolerant.csv
+│   ├── orthogroups_unique_heat_tolerant.csv
+│   ├── orthogroups_unique_non_heat_tolerant.csv
+```
 
