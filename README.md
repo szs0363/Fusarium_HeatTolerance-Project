@@ -81,7 +81,7 @@ Analyses include:
 
 * Presence/absence matrices
 * Heatmaps of orthogroup distribution
-* Venn/UpSet plots for shared gene families
+* UpSet plots for shared gene families
 
 ---
 
@@ -105,7 +105,7 @@ To identify **candidate orthogroups associated with heat tolerance** in FSSC cla
 
 ## Reproducibility Notes
 
-* All scripts used in the pipeline are included in `/scripts`
+* All scripts used in the pipeline are included in `/HPC_scripts`
 * R scripts are modular and reproducible
 * Metadata file is essential for grouping species
 
