@@ -34,6 +34,7 @@ Downstream Analysis Heat Tolerant vs Non-Heat Tolerant Genomes
     meta <- read.csv("Data/metadata.csv")
     rownames(meta) <- meta$genome
 
+    cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
     # Confirm column names match metadata
     all(colnames(ortho) %in% meta$genome)  # Should return TRUE
 
@@ -110,12 +111,9 @@ Downstream Analysis Heat Tolerant vs Non-Heat Tolerant Genomes
     # Make each species a column (UpSetR needs species as columns)
     upset_input <- as.data.frame(pa_matrix)
 
-    # Add group color labels
-    species_colors <- ifelse(colnames(upset_input) %in% heat_species, "#E74C3C", "#3498DB")
-
     upsetplot <- upset(upset_input,
           sets = colnames(upset_input),
-          sets.bar.color = species_colors,
+          nintersects = 25,
           order.by = "freq",
           decreasing = TRUE,
           mb.ratio = c(0.6, 0.4),
@@ -159,22 +157,21 @@ Downstream Analysis Heat Tolerant vs Non-Heat Tolerant Genomes
     # Filter for variable orthogroups (not all same value)
     variable_OGs <- ortho[apply(ortho, 1, var) > 0, ]
 
-    # Take top 50 most variable for cleaner heatmap
+    # Take top 30 most variable for cleaner heatmap
     top_variable <- variable_OGs[order(apply(variable_OGs, 1, var),
-                                       decreasing = TRUE), ][1:50, ]
+                                       decreasing = TRUE), ][1:30, ]
 
     # Annotation for columns (species)
     col_annotation <- data.frame(Group = meta$group)
     rownames(col_annotation) <- meta$genome
 
-    ann_colors <- list(Group = c(heat_tolerant     = "#E74C3C",
-                                  non_heat_tolerant = "#3498DB"))
+    ann_colors <- list(Group = c(heat_tolerant     = "#D55E00",
+                                  non_heat_tolerant = "#56B4E9"))
 
-    #png("heatmap_top50_variable_OGs.png", width = 1200, height = 1400, res = 150)
     heatmap <- pheatmap(top_variable,
              annotation_col = col_annotation,
              annotation_colors = ann_colors,
-             color = colorRampPalette(c("white", "#FFF3CD", "#E74C3C"))(50),
+             color = colorRampPalette(c("white", "#F0E442", "#E74C3C"))(30),
              clustering_distance_rows = "euclidean",
              clustering_distance_cols = "euclidean",
              clustering_method = "complete",
@@ -182,7 +179,7 @@ Downstream Analysis Heat Tolerant vs Non-Heat Tolerant Genomes
              show_colnames = TRUE,
              fontsize_col = 9,
              fontsize_row = 7,
-             main = "Top 50 Variable Orthogroups — Gene Copy Number",
+             main = "Top 30 Variable Orthogroups — Gene Copy Number",
              border_color = NA)
     heatmap
 
@@ -205,16 +202,65 @@ Downstream Analysis Heat Tolerant vs Non-Heat Tolerant Genomes
 
 
     ggplot(summary_df, aes(x = reorder(Category, -Count), y = Count, fill = Category)) +
-      geom_bar(stat = "identity", width = 0.65) +
+      geom_bar(stat = "identity", width = 0.6) +
       geom_text(aes(label = Count), vjust = -0.5, size = 4.5, fontface = "bold") +
-      scale_fill_manual(values = c("#E74C3C", "#F39C12", "#3498DB",
-                                    "#27AE60", "#9B59B6")) +
+      scale_fill_manual(values = c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00")) +
       labs(title = "Orthogroup Distribution by Category",
            x = NULL, y = "Number of Orthogroups") +
-      theme_minimal(base_size = 13) +
+      theme_classic(base_size = 13) +
       theme(legend.position = "none",
-            axis.text.x = element_text(angle = 30, hjust = 1, size = 10),
-            plot.title = element_text(hjust = 0.5, face = "bold"))
+            axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
+            plot.title = element_text(hjust = 0.5, face = "bold")) 
 
-![](Data_Analysis_HTproject_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](Data_Analysis_HTproject_files/figure-markdown_strict/unnamed-chunk-9-1.png) -
 58 unique orthogroups were found strictly on the heat tolerant species.
+
+\#Future work The genes within these group should be functionally
+annotated and any genes that can have potential function relating to
+heat tolerance can be further studied.
+
+    print_tree <- function(path = ".", prefix = "") {
+      files <- list.files(path, all.files = FALSE)
+      
+      for (i in seq_along(files)) {
+        cat(prefix, "├── ", files[i], "\n", sep = "")
+        
+        full_path <- file.path(path, files[i])
+        
+        if (dir.exists(full_path)) {
+          print_tree(full_path, paste0(prefix, "│   "))
+        }
+      }
+    }
+
+    # Run it
+    print_tree()
+
+    ## ├── core_orthogroups_all12.csv
+    ## ├── Data
+    ## │   ├── metadata.csv
+    ## │   ├── Orthogroups.GeneCount.tsv
+    ## │   ├── Orthogroups.tsv
+    ## ├── Data_Analysis_HTproject_files
+    ## │   ├── figure-markdown_strict
+    ## │   │   ├── unnamed-chunk-7-1.png
+    ## │   │   ├── unnamed-chunk-8-1.png
+    ## │   │   ├── unnamed-chunk-9-1.png
+    ## ├── Data_Analysis_HTproject.md
+    ## ├── Data_Analysis_HTproject.Rmd
+    ## ├── Fusarium_HeatTolerance.Rproj
+    ## ├── HPC_scripts
+    ## │   ├── Busco+basicstats.sh
+    ## │   ├── Clean_sort_mask.sh
+    ## │   ├── Orthofinder.sh
+    ## │   ├── predict.sh
+    ## ├── orthogroups_softcore_heat_tolerant.csv
+    ## ├── orthogroups_unique_heat_tolerant.csv
+    ## ├── orthogroups_unique_non_heat_tolerant.csv
+    ## ├── README.html
+    ## ├── README.md
+    ## ├── Results
+    ## │   ├── core_orthogroups_all12.csv
+    ## │   ├── orthogroups_softcore_heat_tolerant.csv
+    ## │   ├── orthogroups_unique_heat_tolerant.csv
+    ## │   ├── orthogroups_unique_non_heat_tolerant.csv
